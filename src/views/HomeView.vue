@@ -1,10 +1,9 @@
 <template>
   <div class="row">
     <div class="col-8">
-      <instagram-card />
-      <instagram-card />
+      <instagram-card v-for="card in cards" :key="card" :info="card"/>
     </div>
-    <div class="col-4">Sidebar {{ hello }} {{ lista }}</div>
+    <div class="col-4">Sidebar</div>
   </div>
 </template>
 
@@ -12,15 +11,22 @@
 // @ is an alias to /src
 import InstagramCard from "@/components/InstagramCard.vue";
 
-let lista = [1,2,3,4,"ij"]
+let cards = []
+cards = [
+"https://picsum.photos/id/1/200/300",
+"https://picsum.photos/id/2/200/300",
+"https://picsum.photos/id/3/200/300",
+"https://picsum.photos/id/4/200/300"
+
+
+]
 
 export default {
   name: "HomeView",
   data(){
     return{
       //kljuc vrijednost
-      hello: "world",
-      lista
+      cards: cards
 
     }
   },
