@@ -17,7 +17,7 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarToggler">
               <form id="search" class="navbar-form form-inline ml-auto">
-                  <input class="form-control mr-sm-2" type="search" placeholder="Pretraga" aria-label="Search" />
+                  <input v-model="store.searchTerm" class="form-control mr-sm-2" type="search" placeholder="Pretraga" aria-label="Search" />
               </form>
               <!-- Image and text -->
               <ul class="navbar-nav ml-auto">
@@ -37,6 +37,20 @@
       </div>
   </div>
 </template>
+
+<script>
+import store from '@/store'
+
+export default{
+    name:"app",
+    data(){
+        return{
+            store
+        }
+    }
+}
+
+</script>
 
 <style lang="scss">
 #app {
