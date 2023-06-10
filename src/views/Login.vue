@@ -44,6 +44,7 @@
 
 <script>
 import { firebase } from "@/firebase";
+
 export default {
   name: "login",
   data() {
@@ -55,12 +56,15 @@ export default {
   methods: {
     login() {
       console.log("login..." + this.username);
+      console.log(this.$router);
 
       firebase
         .auth()
         .signInWithEmailAndPassword(this.username, this.password)
-        .then(function () {
-          console.log("uspješna prijava");
+        .then((result) => {
+          console.log("uspješna prijava", result);
+
+          this.$router.replace({ name: "home" });
         })
         .catch(function (e) {
           console.log("Greška", e);
