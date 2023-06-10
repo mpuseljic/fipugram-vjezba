@@ -1,12 +1,40 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/login">Login</router-link> |
-      <router-link to="/signup">Signup</router-link> 
+      <nav id="nav" class="navbar navbar-expand-md navbar-light">
+          <router-link to="/" class="navbar-brand">
+              <img src="@/assets/fipu_logo.png" height="40" class="d-inline-block align-top" alt="" loading="lazy" />
+          </router-link>
+          <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarToggler"
+              aria-controls="navbarToggler"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+          >
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggler">
+              <form id="search" class="navbar-form form-inline ml-auto">
+                  <input class="form-control mr-sm-2" type="search" placeholder="Pretraga" aria-label="Search" />
+              </form>
+              <!-- Image and text -->
+              <ul class="navbar-nav ml-auto">
+                  <li class="nav-item">
+                      <router-link to="/login" class="nav-link">Login</router-link>
+                  </li>
+                  <li class="nav-item">
+                      <router-link to="/signup" class="nav-link">Sign up</router-link>
+                  </li>
+              </ul>
+          </div>
+      </nav>
 
-    </div>
-    <router-view />
+      <div class="container">
+          <router-view />
+          <!-- tu router dinamicki ubaci screen -->
+      </div>
   </div>
 </template>
 
@@ -30,5 +58,9 @@ nav {
       color: #42b983;
     }
   }
+}
+#search {
+    display: block;
+    text-align: center;
 }
 </style>
