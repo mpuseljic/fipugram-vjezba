@@ -99,53 +99,53 @@ export default {
           });
         });
     },
-    postNewImage() {
-      this.imageReference.generateBlob((blobData) => {
-        console.log(blobData);
+    getImage() {
+      // promise based, omotač oko callbacka
+      // moramo vratiit novi promise
 
-        let imageName =
-          "posts/" + store.currentUser + "/" + Date.now() + ".png";
-
-        storage
-          .ref(imageName)
-          .put(blobData)
-          .then((result) => {
-            //..uspješna linija
-            result.ref
-              .getDownloadURL()
-              .then((url) => {
-                //čuva this zbog arrow funkcije
-                console.log("javni link", url);
-
-                const imageDescription = this.newImageDescription;
-
-                db.collection("posts")
-                  .add({
-                    url: imageUrl,
-                    desc: imageDescription,
-                    email: store.currentUser,
-                    posted_at: Date.now(),
-                  })
-                  .then(() => {
-                    console.log("Spremljeno ");
-                    this.newImageDescription = "";
-                    this.imageReference = "";
-
-                    this.getPosts();
-                  })
-                  .catch((e) => {
-                    console.error(e);
-                  });
-              })
-              .catch((e) => {
-                console.log(e);
-              });
-          })
-          .catch((e) => {
-            //...
-            console.error(e);
-          });
+      return new Promise((resolveFn, errorFn) => {
+        this.imageReference.generateBlob((data) => {
+          resolveFn(data);
+        });
       });
+    },
+    postNewImage() {
+      // this.imageReference.generateBlob((blobData) => {
+      this.getImage()
+        .then((data) => {
+          console.log(blobData);
+          let imageName =
+            "posts/" + store.currentUser + "/" + Date.now() + ".png";
+
+          return storage.ref(imageName).put(blobData);
+        })
+        .then((result) => {
+          //..uspješna linija
+          result.ref.getDownloadURL(); // promise
+        })
+        .then((url) => {
+          //čuva this zbog arrow funkcije
+          console.log("javni link", url);
+
+          const imageDescription = this.newImageDescription;
+
+          return db.collection("posts").add({
+            url: imageUrl,
+            desc: imageDescription,
+            email: store.currentUser,
+            posted_at: Date.now(),
+          });
+        })
+        .then((doc) => {
+          console.log("Spremljeno ", doc);
+          this.newImageDescription = "";
+          this.imageReference = "";
+
+          this.getPosts();
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     },
   },
   components: {
