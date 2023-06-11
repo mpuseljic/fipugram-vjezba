@@ -23,7 +23,7 @@
             id="imageDescription"
           />
         </div>
-        <button type="submit"  class="btn btn-primary ml-2">Post image</button>
+        <button type="submit" class="btn btn-primary ml-2">Post image</button>
       </form>
       <!-- listanje kartica -->
       <instagram-card
@@ -42,60 +42,87 @@ import InstagramCard from "@/components/InstagramCard.vue";
 import store from "@/store";
 import { firebase, db } from "@/firebase";
 
-let cards = [];
-cards = [
-  {
-    url: "https://picsum.photos/id/1/200/300",
-    description: "laptop",
-    time: "few minutes ago...",
-  },
-  {
-    url: "https://picsum.photos/id/2/200/300",
-    description: "laptop #2",
-    time: "hour ago...",
-  },
-  {
-    url: "https://picsum.photos/id/3/200/300",
-    description: "laptop #3",
-    time: "few hours ago...",
-  },
-];
+// cards = [
+//   {
+//     url: "https://picsum.photos/id/1/200/300",
+//     description: "laptop",
+//     time: "few minutes ago...",
+//   },
+//   {
+//     url: "https://picsum.photos/id/2/200/300",
+//     description: "laptop #2",
+//     time: "hour ago...",
+//   },
+//   {
+//     url: "https://picsum.photos/id/3/200/300",
+//     description: "laptop #3",
+//     time: "few hours ago...",
+//   },
+// ];
 
 export default {
   name: "HomeView",
   data() {
     return {
       //kljuc vrijednost
-      cards,
+      cards: [],
       store,
       newImageUrl: "", // <-- url nove slike
       newImageDescription: "", // <-- opis nove slike
     };
   },
-  methods:{
-  postNewImage() {
-    const imageUrl = this.newImageUrl;
-    const imageDescription = this.newImageDescription;
+  mounted() {
+    // <- daje točan trenutak kada se komponenta prikaze na ektran
+    console.log("mounted");
+    //dohvat iz firebasea
+    this.getPosts();
+  },
+  methods: {
+    getPosts() {
+      console.log("firebse dohvat...");
 
-    db.collection("posts")
-      .add({
-        url: imageUrl,
-        desc: imageDescription,
-        email: store.currentUser,
-        posted_at: Date.now(),
-      })
-      .then(()=>{
-        console.log("Spremljeno ")
-        this.newImageDescription='';
-        this.imageUrl='';
-        alert("slika uspješno unesena!")
+      db.collection("posts")
+        .orderBy("posted_at", "desc")
+        .limit(10)
+        .get()
 
-      })
-      .catch((e)=>{
-        console.error(e)
-      });
-  }
-},
+        .then((query) => {
+          query.forEach((doc) => {
+            this.cards = [];
+            const data = doc.data();
+
+            this.cards.push({
+              id: doc.id,
+              time: data.posted_at,
+              description: data.desc,
+              url: data.url,
+            });
+          });
+        });
+    },
+    postNewImage() {
+      const imageUrl = this.newImageUrl;
+      const imageDescription = this.newImageDescription;
+
+      db.collection("posts")
+        .add({
+          url: imageUrl,
+          desc: imageDescription,
+          email: store.currentUser,
+          posted_at: Date.now(),
+        })
+        .then(() => {
+          console.log("Spremljeno ");
+          this.newImageDescription = "";
+          this.imageUrl = "";
+
+          this.getPosts();
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    },
+  },
   components: {
     InstagramCard,
   },
