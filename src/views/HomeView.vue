@@ -109,43 +109,33 @@ export default {
         });
       });
     },
-    postNewImage() {
-      // this.imageReference.generateBlob((blobData) => {
-      this.getImage()
-        .then((data) => {
-          console.log(blobData);
-          let imageName =
-            "posts/" + store.currentUser + "/" + Date.now() + ".png";
+    async postNewImage() {
+      try {
+        let blobDara = await this.getImage();
+        let imageName =
+          "posts/" + store.currentUser + "/" + Date.now() + ".png";
+        let result = await storage.ref(imageName).put(blobData);
+        let url = await result.ref.getDownloadURL();
 
-          return storage.ref(imageName).put(blobData);
-        })
-        .then((result) => {
-          //..uspješna linija
-          result.ref.getDownloadURL(); // promise
-        })
-        .then((url) => {
-          //čuva this zbog arrow funkcije
-          console.log("javni link", url);
+        console.log("javni link", url);
 
-          const imageDescription = this.newImageDescription;
+        const imageDescription = this.newImageDescription;
 
-          return db.collection("posts").add({
-            url: imageUrl,
-            desc: imageDescription,
-            email: store.currentUser,
-            posted_at: Date.now(),
-          });
-        })
-        .then((doc) => {
-          console.log("Spremljeno ", doc);
-          this.newImageDescription = "";
-          this.imageReference = "";
-
-          this.getPosts();
-        })
-        .catch((e) => {
-          console.error(e);
+        let doc = await db.collection("posts").add({
+          url: imageUrl,
+          desc: imageDescription,
+          email: store.currentUser,
+          posted_at: Date.now(),
         });
+
+        console.log("Spremljeno ", doc);
+        this.newImageDescription = "";
+        this.imageReference = "";
+
+        this.getPosts();
+      } catch (e) {
+        console.error("greška ", e);
+      }
     },
   },
   components: {
