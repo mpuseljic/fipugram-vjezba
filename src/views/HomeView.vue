@@ -2,7 +2,11 @@
   <div class="row">
     <div class="col-8">
       <!-- nova forma za post -->
-      <form @submit.prevent="postNewImage" class="form-inline mb-5">
+      <form
+        v.if="!loading"
+        @submit.prevent="postNewImage"
+        class="form-inline mb-5"
+      >
         <div class="form-group">
           <croppa
             :width="400"
@@ -23,6 +27,11 @@
         </div>
         <button type="submit" class="btn btn-primary ml-2">Post image</button>
       </form>
+      <img
+        v-if="loading"
+        class="loading"
+        :src="require('@/assets/loading.gif')"
+      />
       <!-- listanje kartica -->
       <instagram-card
         v-for="card in filteredCards"
@@ -68,6 +77,7 @@ export default {
       newImageUrl: "", // <-- url nove slike
       newImageDescription: "", // <-- opis nove slike
       imageReference: null,
+      loading: false,
     };
   },
   mounted() {
@@ -111,6 +121,7 @@ export default {
     },
     async postNewImage() {
       try {
+        this.loading = true;
         let blobDara = await this.getImage();
         let imageName =
           "posts/" + store.currentUser + "/" + Date.now() + ".png";
@@ -130,12 +141,12 @@ export default {
 
         console.log("Spremljeno ", doc);
         this.newImageDescription = "";
-        this.imageReference = "";
 
         this.getPosts();
       } catch (e) {
         console.error("greška ", e);
       }
+      this.loading = false;
     },
   },
   components: {
@@ -161,3 +172,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.loading {
+  width: 400px;
+}
+</style>
